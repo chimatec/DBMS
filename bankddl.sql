@@ -1,0 +1,319 @@
+/*
+
+*/
+
+CREATE TABLE BANK(
+    bnkName VARCHAR(30)NOT NULL,
+    bnkNumber CHAR(6) NOT NULL,
+    PRIMARY KEY(bnkNumber,bnkName),
+);
+CREATE TABLE BRANCH(
+bkNum CHAR(6) NOT NULL,
+brnCode VARCHAR(6)NOT NULL,
+address VARCHAR(30) NOT NULL,
+phone VARCHAR(12) NOT NULL,
+PRIMARY KEY(brnCode)
+);
+CREATE TABLE CHEQUING(
+    accNum VARCHAR(9) NOT NULL,
+    overDraft DECIMAL(10,2) NULL,
+    PRIMARY KEY(accNum)
+   );
+   
+CREATE TABLE ACCOUNT(
+    bkName VARCHAR(30) NOT NULL,
+    accNum VARCHAR(9) NULL,
+    balance DECIMAL (10,2) NULL,
+    bmCode VARCHAR(6)NOT NULL,
+    PRIMARY KEY(bkName),
+    UNIQUE(accNum)
+);
+CREATE TABLE SAVINGS(
+    savAccNum VARCHAR(9) NOT NULL,
+    interestRate DECIMAL(10,0) NULL,
+    PRIMARY KEY(savAccNum)
+
+);
+CREATE TABLE CUSTOMER(
+    clientNum VARCHAR(12) NOT NULL,
+	acNumber VARCHAR(9)NOT NULL,
+    fname VARCHAR(30)NOT NULL,
+    lname VARCHAR(30)NOT NULL,
+    brnCode VARCHAR(6) NOT NULL,
+    PRIMARY KEY(acNumber),
+	UNIQUE(clientNum)
+);
+CREATE TABLE LOAN(
+    bnkNam VARCHAR(30) NOT NULL,
+    brnCode VARCHAR(6) NOT NULL,
+    clientNum VARCHAR(12) NOT NULL,
+    balance DECIMAL(10,2)NULL,
+    loaNum VARCHAR(8) NOT NULL,
+    PRIMARY KEY(loaNum)
+);
+CREATE TABLE HOUSE(
+    loaNum VARCHAR(8) NOT NULL,
+     amount DECIMAL(10,2) NULL,
+    lnDate DATE NULL,
+    address VARCHAR(30)NULL,
+    amortization VARCHAR (35)NULL,
+    PRIMARY KEY(loaNum)
+);
+CREATE TABLE STUDENT (
+    loanNum VARCHAR(8) NOT NULL,
+    amount DECIMAL(10,2) NULL,
+    lnDate DATE NULL,
+    gradYear DATE NULL,
+    PRIMARY KEY (loanNum)
+);
+CREATE TABLE CAR(
+    loanNum VARCHAR(8) NOT NULL,
+    regAmount DECIMAL(10,2) NULL,
+    regDate DATE NULL,
+    model VARCHAR(6) NULL,
+    PRIMARY KEY(loanNum, model)
+);
+CREATE TABLE CREDIT_CARD(
+    loaNum VARCHAR(8) NOT NULL,
+    revLimit DECIMAL(10,2) NULL,
+    ccNum INTEGER NOT NULL,
+    expiry Date NOT NULL,
+    PRIMARY KEY(ccNum,expiry)
+);
+CREATE TABLE LINE_OF_CREDIT(
+    loaNum VARCHAR(8) NOT NULL,
+    revLimit DECIMAL(10,2) NULL,
+    line_of_credit DECIMAL NOT NULL,
+    PRIMARY KEY(loaNum,line_of_credit)
+);
+----------ADDING FOREIGN KEY CONSTRAINTS--------
+
+ALTER TABLE BRANCH ADD constraint companyFK1 FOREIGN KEY(bkNum)
+REFERENCES BANK(bnkNumber);
+
+ALTER TABLE ACCOUNT ADD constraint FK2 FOREIGN KEY(bkName)
+REFERENCES BANK(bnkName);
+
+ALTER TABLE ACCOUNT ADD constraint FK3 FOREIGN KEY(bmCode)
+REFERENCES BRANCH (brnCode);
+
+
+ALTER TABLE SAVINGS ADD constraint FK5 FOREIGN KEY(savAccNum)
+REFERENCES ACCOUNT(accNum);
+
+ALTER TABLE CUSTOMER  ADD constraint FK6 FOREIGN KEY(brnCode)
+REFERENCES BRANCH (brnCode);
+
+ALTER TABLE CUSTOMER ADD constraint FK4 FOREIGN KEY(acNumber)
+REFERENCES ACCOUNT (accNum);
+
+ALTER TABLE LOAN ADD constraint FK7 FOREIGN KEY(bnkNam)
+REFERENCES BANK (bnkName);
+
+ALTER TABLE LOAN ADD constraint FK8 FOREIGN KEY(brnCode)
+REFERENCES BRANCH (brnCode);
+
+ALTER TABLE LOAN ADD constraint FK9 FOREIGN KEY(acNumber)
+REFERENCES CUSTOMER (cusAcNum);
+
+ALTER TABLE HOUSE ADD constraint FK11 FOREIGN KEY (loaNum)
+REFERENCES LOAN (loaNum);
+
+ALTER TABLE STUDENT ADD constraint FK12 FOREIGN KEY (loanNum)
+REFERENCES LOAN (loaNum);
+
+ALTER TABLE CAR ADD constraint FK13 FOREIGN KEY (loanNum)
+REFERENCES LOAN (loaNum);
+
+ALTER TABLE CREDIT_CARD ADD constraint FK15 FOREIGN KEY (loaNum)
+REFERENCES LOAN (loaNum);
+
+ALTER TABLE LINE_OF_CREDIT ADD constraint FK16 FOREIGN KEY (loaNum)
+REFERENCES LOAN (loaNum);
+
+
+
+------INSERT BANK AND CUSTOMER DATA----
+
+
+INSERT INTO BANK (bnkName,bnkNumber) VALUES ('RBC','093726'),('Scottia Bank','293478'),('TD','536456'),('Royal Bank','675856');
+
+INSERT INTO BRANCH (bkNum,brnCode,address,phone) VALUES('093726','WP-775','24 Toronto Av. WPG','204-776-2673'),
+('293478','WP-776','65 Arlignton Av. WPG','204-776-2973'),
+('536456','WP-777','74 Academy Str. WPG','204-776-2876'),
+('675856','MB-778','34 Windshield Str. WPG','204-776-4876');
+
+
+INSERT INTO ACCOUNT(bkName,accNum,balance,bmCode) VALUES('RBC','093726347',456.09,'WP-775'),
+('Scottia Bank','293478569',600.09,'WP-776'),('TD','053645667',700.09,'WP-777'),('Royal Bank','536456673',700.09,'MB-778');
+
+INSERT INTO CUSTOMER (cusAcnum ,fname,lname,brnCode) VALUES ('093726347','Bright','Adams','WP-775'),
+('293478569','Philips','Davids','WP-776'),('053645667','Frighty','Biggyman','WP-777'),('536456673','Tony','Olaniyi','MB-778');
+
+
+INSERT INTO LOAN(bnkNam, brnCode,cusNum,balance,loaNum) VALUES ('RBC','WP-775','093726347',NULL,'00987654')
+,('Scottia Bank','WP-776','293478569',NULL,'00987655'),('TD','WP-777','053645667',NULL,'00987656'),
+('Royal Bank','MB-778','536456673',NULL,'00987657');
+
+
+INSERT INTO STUDENT(loanNum,amount,lnDate,gradYear) VALUES ('00987654',20000,NULL,NULL)
+,('00987655',30000,NULL,NULL),('00987656',200000,NULL,NULL),('00987657',7000,NULL,NULL);
+
+INSERT INTO LINE_OF_CREDIT (loaNum,revLimit,line_of_credit ) VALUES ('00987654',NULL,5000);
+
+
+
+
+
+
+INSERT INTO CUSTOMER (clientNum,acNumber,fname,lname,brnCode) VALUES ( '001100220033', '093726347','Bright','Adams','WP-775');
+INSERT INTO ACCOUNT(bkName,accNum,clientNum,balance,bmCode) VALUES('Royal Bank','093726347','001100220033',456,'WP-775');
+INSERT INTO SAVINGS (savAccNum,interestRate) VALUES ('093726347',1.1);
+INSERT INTO LOAN(bnkNam, brnCode,clientNum,balance,loaNum) VALUES ('Royal Bank','WP-775','001100220033',NULL,'00987654');
+INSERT INTO STUDENT(loanNum,amount,lnDate,gradYear) VALUES ('00987654',20000,NULL,NULL);
+INSERT INTO LINE_OF_CREDIT (loaNum,revLimit,line_of_credit ) VALUES ('00987654',NULL,5000);
+INSERT INTO ACCOUNT(bkName,accNum,clientNum,balance,bmCode) VALUES('TD','093726356','001100220033',456.09,'WP-777');
+INSERT INTO CHEQUING(accNum,overDraft) VALUES('093726356',0);													 
+
+INSERT INTO BRANCH (bkNum,brnCode,address,phone) VALUES('093726','WP-775','24 Toronto Av. WPG','204-776-2673'),
+('293478','WP-776','65 Arlignton Av. WPG','204-776-2973'),
+('536456','WP-777','74 Academy Str. WPG','204-776-2876'),
+('675856','MB-778','34 Windshield Str. WPG','204-776-4876');
+
+INSERT INTO BANK (bnkName,bnkNumber) VALUES ('RBC','093726'),('Scottia Bank','293478'),('TD','536456'),('Royal Bank','675856');
+
+-----------BELOW IS THE ORIGINAL ------------
+CREATE TABLE BANK(
+    bnkName VARCHAR(30)NOT NULL,
+    bnkNumber CHAR(6) NOT NULL,
+    PRIMARY KEY(bnkNumber),
+);
+CREATE TABLE BRANCH(
+bkNum CHAR(6) NOT NULL,
+brnCode VARCHAR(6)NOT NULL,
+address VARCHAR(30) NOT NULL,
+phone VARCHAR(12) NOT NULL,
+PRIMARY KEY(brnCode)
+);
+CREATE TABLE CHEQUING(
+    accNum VARCHAR(9) NOT NULL,
+    overDraft DECIMAL(10,2) NULL,
+    PRIMARY KEY(accNum)
+   );
+   
+CREATE TABLE ACCOUNT(
+    bkName VARCHAR(30) NOT NULL,
+    accNum VARCHAR(9) NOT NULL,
+	clientNum VARCHAR(12) NOT NULL,
+    balance DECIMAL (10,2) NULL,
+    bmCode VARCHAR(6)NOT NULL,
+    PRIMARY KEY(accNum)
+);
+CREATE TABLE SAVINGS(
+    savAccNum VARCHAR(9) NOT NULL,
+    interestRate DECIMAL(10,0) NULL,
+    PRIMARY KEY(savAccNum)
+
+);
+CREATE TABLE CUSTOMER(
+    clientNum VARCHAR(12) NOT NULL,
+	acNumber VARCHAR(9)NULL,
+    fname VARCHAR(30)NOT NULL,
+    lname VARCHAR(30)NOT NULL,
+    brnCode VARCHAR(6) NOT NULL,
+    PRIMARY KEY(clientNum)
+);
+CREATE TABLE LOAN(
+    bnkNam VARCHAR(30) NOT NULL,
+    brnCode VARCHAR(6) NOT NULL,
+    clientNum VARCHAR(12) NOT NULL,
+    balance DECIMAL(10,2)NULL,
+    loaNum VARCHAR(8) NOT NULL,
+    PRIMARY KEY(loaNum)
+);
+CREATE TABLE HOUSE(
+    loaNum VARCHAR(8) NOT NULL,
+    amount DECIMAL(10,2) NULL,
+    lnDate DATE NULL,
+    address VARCHAR(30)NULL,
+    amortization VARCHAR (35)NULL,
+    PRIMARY KEY(loaNum)
+);
+CREATE TABLE STUDENT (
+    loanNum VARCHAR(8) NOT NULL,
+    amount DECIMAL(10,2) NULL,
+    lnDate DATE NULL,
+    gradYear DATE NULL,
+    PRIMARY KEY (loanNum)
+);
+CREATE TABLE CAR(
+    loanNum VARCHAR(8) NOT NULL,
+    regAmount DECIMAL(10,2) NULL,
+    regDate DATE NULL,
+    model VARCHAR(6) NULL,
+    PRIMARY KEY(loanNum, model)
+);
+CREATE TABLE CREDIT_CARD(
+    loaNum VARCHAR(8) NOT NULL,
+    revLimit DECIMAL(10,2) NULL,
+    ccNum VARCHAR(20),
+    expiry Date NOT NULL,
+    PRIMARY KEY(ccNum,expiry)
+);
+CREATE TABLE LINE_OF_CREDIT(
+    loaNum VARCHAR(8) NOT NULL,
+    revLimit DECIMAL(10,2) NULL,
+    line_of_credit DECIMAL NOT NULL,
+    PRIMARY KEY(loaNum,line_of_credit)
+);
+
+
+
+
+
+ALTER TABLE BRANCH ADD constraint companyFK1 FOREIGN KEY(bkNum)
+REFERENCES BANK(bnkNumber);
+
+ALTER TABLE ACCOUNT ADD constraint FK3 FOREIGN KEY(bmCode)
+REFERENCES BRANCH (brnCode);
+
+ALTER TABLE SAVINGS ADD constraint FK5 FOREIGN KEY(savAccNum)
+REFERENCES ACCOUNT(accNum);
+
+ALTER TABLE CUSTOMER  ADD constraint FK6 FOREIGN KEY(brnCode)
+REFERENCES BRANCH (brnCode);
+
+ALTER TABLE ACCOUNT ADD constraint FK4 FOREIGN KEY(clientNum)
+REFERENCES CUSTOMER(clientNum);
+
+ALTER TABLE LOAN ADD constraint FK7 FOREIGN KEY(bnkNam)
+REFERENCES BANK (bnkName);
+
+ALTER TABLE LOAN ADD constraint FK8 FOREIGN KEY(brnCode)
+REFERENCES BRANCH (brnCode);
+
+ALTER TABLE LOAN ADD constraint FK9 FOREIGN KEY(clientNum)
+REFERENCES CUSTOMER (clientNum);
+
+ALTER TABLE HOUSE ADD constraint FK11 FOREIGN KEY (loaNum)
+REFERENCES LOAN (loaNum);
+
+ALTER TABLE STUDENT ADD constraint FK12 FOREIGN KEY (loanNum)
+REFERENCES LOAN (loaNum);
+
+ALTER TABLE CAR ADD constraint FK13 FOREIGN KEY (loanNum)
+REFERENCES LOAN (loaNum);
+
+ALTER TABLE CREDIT_CARD ADD constraint FK15 FOREIGN KEY (loaNum)
+REFERENCES LOAN (loaNum);
+
+ALTER TABLE LINE_OF_CREDIT ADD constraint FK16 FOREIGN KEY (loaNum)
+REFERENCES LOAN (loaNum);
+
+
+
+
+
+
+ALTER TABLE ACCOUNT ADD constraint FK2 FOREIGN KEY(bkName)
+REFERENCES BANK(bnkName);
