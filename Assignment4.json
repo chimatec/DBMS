@@ -1,0 +1,73 @@
+
+
+"_comment (5.a)Modify the department collection so there is a simple embedded array of locations; the required data is in the dept_locations collection. For example, a department may have a simple array: "location": ["Winnipeg", "Vancouver"]."
+
+db.Department.update({"Dname": "Research"},{$set:{"Locations": ["Houston","Sugarland","Bellaire"]}})
+db.Department.update({"Dname": "Administration"},{$set:{"Locations": ["Stafford","Bellaire"]}})
+db.Department.update({"Dname": "Headquarters"},{$set:{"Locations": ["Houston","Sugarland"]}})
+
+"_comment" "(5.b) Modify the employee collection so there is an embedded array of project documents; the source for data is the works_on collection. Fo example, an employee document may have an array of documents:
+"Project": [{Pno: 98, Hours: 40}, {Pno: 99, Hours: 20}]"
+
+db.Employees.update({"Ssn": "666884444"},{$set:{"Project":[{"Pno": 3,"Hours": 40}]}})
+db.Employees.update({"Ssn": "888665555"},{$set:{"Project":[{"Pno": 20}]}})
+db.Employees.update({"Ssn": "987987987"},{$set:{"Project":[{"Pno": 10,"Hours": 35},{"Pno": 30,"Hours": 5}]}})
+db.Employees.update({"Ssn": "123456789"},{$set:{"Project":[{"Pno": 1,"Hours": 32.5},{"Pno": 2,"Hours": 7.5}]}})
+db.Employees.update({"Ssn": "333445555"},{$set:{"Project":[{"Pno": 2,"Hours": 10},{"Pno": 3,"Hours": 10},{"Pno": 10,"Hours": 10},{"Pno": 20,"Hours": 10}]}})
+db.Employees.update({"Ssn": "999887777"},{$set:{"Project":[{"Pno": 10,"Hours": 10},{"Pno": 30,"Hours": 30}]}})
+db.Employees.update({"Ssn": "987654321"},{$set:{"Project":[{"Pno": 30,"Hours": 20},{"Pno": 20,"Hours": 15}]}})
+db.Employees.update({"Ssn": "453453453"},{$set:{"Project":[{"Pno": 1,"Hours": 20},{"Pno": 2,"Hours": 20}]}})
+
+"_comment": "(4.c)Delete the works_on and dept_locations collections from your database."
+
+db.Dept_location.drop()
+db.Works_On.drop()
+
+"_comment": "(5.d) Add a new document to employee collection so that it contains exactly 9 employees after you complete this step:
+- For employee data, use your first name, middle initial, last name, and your UW student number as the SSN value.
+- Make up values for other fields except projects (do not include any project)"
+
+db.Employees.insert({ "Ssn": "3071950",
+    "Fname": "Chimankpam",
+    "Lname": "Wilson",
+    "Minit": "M",
+    "Bdate": "1820-04-09",
+    "Address": "512 Portage ave., Winnipeg, MB",
+    "Sex": "M",
+    "Salary": 10000000000,
+    "Super_ssn": "987987987",
+    "Dno": 45,
+    "Dependents": []
+    })
+"_comment": "(5.e)Create the following MongoDB queries:
+        (i.) List SSNs and project information in ascending"
+db.Employees.find({},{"Ssn":1,"Project":1,"_id":0}).sort({"Ssn":1}).pretty()
+
+"_comment": "(ii)List the departments (name and number) and their locations in ascending order of the department number."
+db.Department.find({},{"Dname":1,"Dnumber":1,"Locations":1,"_id":0}).sort({"Dnumber":1}).pretty()
+
+"_comment": "(iii)List the department names and the name of all the projects that it handles in descending order of department names"
+db.Department.find({},{"Dname":1,"Project.Pname":1,"_id":0}).sort({"Dname":-1}).pretty()
+
+"_comment": "(iv.) List all project numbers that employees are working on, with no duplicates."
+db.Employees.distinct("Project.Pno")
+
+"_comment":"(v.)List the first and last names of employees who work on both projects 1 and 2. The list should be in ascending order of the last names."
+db.Employees.find({$and:[{"Project.Pno":1},{"Project.Pno":2}]},{"Fname":1,"Lname":1,"_id":0}).sort({"Lname":1}).pretty()
+
+"_comment": "(vi.)List the last name of employees who have a son, a daughter, and a spouse, in ascending order of the last name."
+db.Employees.find({$and:[{"Dependents.Relationship": "Son"},{"Dependents.Relationship":"Daughter"},{"Dependents.Relationship":"Spouse"}]},{"Lname":1,"_id":0}).sort({"Lname":1}).pretty()
+
+"_comment": "(vii.)List the last name of employees who have at least one child."
+db.Employees.find({"Dependents.Relationship":{$in:["Son","Daughter"]}},{"Lname":1,"_id":0}).pretty()
+db.Employees.find({$or:[{"Dependents.Relationship":{$eq: "Son"}},{"Dependents.Relationship":{$eq:"Daughter"}}]},{"Lname":1,"_id":0}).pretty()
+
+"_comment": "(viii.)List the last name of employees who worked 30 hours or more on a single project."
+db.Employees.find({"Project.Hours":{$gte:30}},{"Lname":1,"_id":0}).pretty()
+
+"_comment": "(ix)List the last name of all female employees whose salary is greater than 30000."
+db.Employees.find({$and:[{"Sex":"F"},{"Salary":{$gte: 30000}}]},{"Lname":1,"_id":0}).pretty()
+
+"_comment": "(x)List the last name and salary of the youngest employee."
+db.Employees.find({"Bdate":{$gt:"1930",$lt:"1990"}},{"Lname":1,"Salary":1,"_id":0}).sort({"Bdate":-1}).limit(1)
+
